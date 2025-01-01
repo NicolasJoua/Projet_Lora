@@ -1,0 +1,997 @@
+[
+    {
+        "id": "3a6a12a5d73b9eef",
+        "type": "tab",
+        "label": "Flux 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "73e90b071b419e5e",
+        "type": "mqtt in",
+        "z": "3a6a12a5d73b9eef",
+        "name": "mqtt from TTN",
+        "topic": "v3/jouanneau-chitoui-ecg@ttn/devices/jouanneau-chtioui/up",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "71ed9c9b5031add6",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 270,
+        "y": 540,
+        "wires": [
+            [
+                "3e38661e2916d3a6",
+                "15cd2f9ba4dca691",
+                "ce858d9dedbdbb21",
+                "4b91d61593591e4a"
+            ]
+        ]
+    },
+    {
+        "id": "3e38661e2916d3a6",
+        "type": "debug",
+        "z": "3a6a12a5d73b9eef",
+        "name": "msg.payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "15cd2f9ba4dca691",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "ChangeFormat",
+        "func": "msg.payload = {\n    timestamp: msg.payload.uplink_message.received_at,\n    bpm: msg.payload.uplink_message.decoded_payload.bpm\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 540,
+        "wires": [
+            [
+                "d991d089168396bd",
+                "bfde0ea985b95071"
+            ]
+        ]
+    },
+    {
+        "id": "d991d089168396bd",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "BpmGauge",
+        "func": "msg.payload = msg.payload.bpm;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 480,
+        "wires": [
+            [
+                "989ae71f48f8dce8",
+                "9c1527697047f5f2"
+            ]
+        ]
+    },
+    {
+        "id": "989ae71f48f8dce8",
+        "type": "ui_gauge",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "group": "uiGroup",
+        "order": 0,
+        "width": "12",
+        "height": "8",
+        "gtype": "gage",
+        "title": "gauge",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "150",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 910,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "bfde0ea985b95071",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "DB",
+        "func": "msg.params = [\n    new Date().toISOString(),\n    msg.payload.bpm\n]\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 540,
+        "wires": [
+            [
+                "2c416189c2914415"
+            ]
+        ]
+    },
+    {
+        "id": "2c416189c2914415",
+        "type": "postgresql",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Insert",
+        "query": "INSERT INTO heartData (timestamp, bpm) VALUES ($1, $2);",
+        "postgreSQLConfig": "635ccf61713184d3",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 910,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bc91a6d98c63c400",
+        "type": "serial out",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Envoyer au port série",
+        "serial": "serialConfig",
+        "x": 1420,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "a49edc0078f50ab6",
+        "type": "debug",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Debug-1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1420,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "3b4e42d319eac361",
+        "type": "ui_slider",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Curseur Vitesse",
+        "label": "Vitesse battement BPM",
+        "tooltip": "",
+        "group": "uiGroup",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "all",
+        "topic": "",
+        "topicType": "str",
+        "min": "0",
+        "max": "9",
+        "step": "1",
+        "className": "",
+        "x": 1120,
+        "y": 720,
+        "wires": [
+            [
+                "bc91a6d98c63c400",
+                "a713cad336d8af7a"
+            ]
+        ]
+    },
+    {
+        "id": "b707be44a1c4c427",
+        "type": "serial in",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "serial": "serialConfig",
+        "x": 1250,
+        "y": 200,
+        "wires": [
+            [
+                "a49edc0078f50ab6"
+            ]
+        ]
+    },
+    {
+        "id": "05ebdb7252022a85",
+        "type": "ui_date_picker",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "label": "date_debut",
+        "group": "f08408df28868a8c",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "topic": "",
+        "topicType": "str",
+        "className": "",
+        "x": 1390,
+        "y": 520,
+        "wires": [
+            [
+                "3ceefaaeb0903c16"
+            ]
+        ]
+    },
+    {
+        "id": "89aa3d8bbc4d3cab",
+        "type": "ui_date_picker",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "label": "date_fin",
+        "group": "f08408df28868a8c",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "topic": "endDate",
+        "topicType": "msg",
+        "className": "",
+        "x": 1400,
+        "y": 560,
+        "wires": [
+            [
+                "28d14541d63c87f1"
+            ]
+        ]
+    },
+    {
+        "id": "3ceefaaeb0903c16",
+        "type": "change",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "start_date",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1600,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "28d14541d63c87f1",
+        "type": "change",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "end_date",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1600,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "abd3c148caf60361",
+        "type": "ui_table",
+        "z": "3a6a12a5d73b9eef",
+        "group": "f08408df28868a8c",
+        "name": "tableau",
+        "order": 4,
+        "width": "20",
+        "height": "13",
+        "columns": [
+            {
+                "field": "timestamp",
+                "title": "date",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "bpm",
+                "title": "bpm",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 420,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "9c1527697047f5f2",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Seuil notification",
+        "func": "// Récupérer la valeur mesurée (BpmGauge, ou toute autre source de données)\nvar bpmValue = msg.payload;  // La valeur de BPM ou autre source\n\n// Récupérer les valeurs de seuil depuis les nœuds `numeric`\nvar seuilMax = flow.get('seuil_max');  // La valeur du seuil max\nvar seuilMin = flow.get('seuil_min');  // La valeur du seuil min\n//msg.val = seuilMax;\n//return msg;\n// Vérifier si la valeur mesurée dépasse les seuils\nif (bpmValue > seuilMax || bpmValue <= seuilMin) {\n    msg.notif = {\n        msg: \"dépassement BPM\",\n        min: seuilMin,\n        max: seuilMax,\n        bpm: bpmValue\n    };\n} \nelse {\n    msg.notif = null;  // Si la valeur est dans l'intervalle, ne rien faire\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 480,
+        "wires": [
+            [
+                "7f1f2c8b3fd3aa69"
+            ]
+        ]
+    },
+    {
+        "id": "efd2dd2577450620",
+        "type": "ui_numeric",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "label": "Seuil Minimal",
+        "tooltip": "",
+        "group": "uiGroup",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "wrap": false,
+        "passthru": true,
+        "topic": "topic",
+        "topicType": "msg",
+        "format": "{{value}}",
+        "min": "50",
+        "max": "65",
+        "step": 1,
+        "className": "",
+        "x": 1410,
+        "y": 380,
+        "wires": [
+            [
+                "ac4650bcafe4999d"
+            ]
+        ]
+    },
+    {
+        "id": "31239793bff55eb0",
+        "type": "ui_numeric",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "label": "Seuil Maximal",
+        "tooltip": "",
+        "group": "uiGroup",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "wrap": false,
+        "passthru": true,
+        "topic": "topic",
+        "topicType": "msg",
+        "format": "{{value}}",
+        "min": "100",
+        "max": "150",
+        "step": 1,
+        "className": "",
+        "x": 1420,
+        "y": 440,
+        "wires": [
+            [
+                "f671d73e20a0ee8e"
+            ]
+        ]
+    },
+    {
+        "id": "f671d73e20a0ee8e",
+        "type": "change",
+        "z": "3a6a12a5d73b9eef",
+        "name": "seuil_max",
+        "rules": [
+            {
+                "t": "set",
+                "p": "seuil_max",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1600,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ac4650bcafe4999d",
+        "type": "change",
+        "z": "3a6a12a5d73b9eef",
+        "name": "seuil_min",
+        "rules": [
+            {
+                "t": "set",
+                "p": "seuil_min",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1580,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "51dc1b6fa09e1ab1",
+        "type": "ui_toast",
+        "z": "3a6a12a5d73b9eef",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "Dépassement BPM",
+        "name": "notif",
+        "x": 1130,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "7f1f2c8b3fd3aa69",
+        "type": "switch",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "property": "notif",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1120,
+        "y": 480,
+        "wires": [
+            [
+                "51dc1b6fa09e1ab1"
+            ]
+        ]
+    },
+    {
+        "id": "ce858d9dedbdbb21",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Recup RSSI_SNR",
+        "func": "var gateway = msg.payload.uplink_message.rx_metadata[0];\n\nmsg.rssi = gateway.rssi;\nmsg.snr = gateway.snr;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 360,
+        "wires": [
+            [
+                "d2a356de8658e186",
+                "6c13d12b1311ce31"
+            ]
+        ]
+    },
+    {
+        "id": "6c13d12b1311ce31",
+        "type": "ui_text",
+        "z": "3a6a12a5d73b9eef",
+        "group": "uiGroup",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "SNR",
+        "format": "{{msg.snr}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 950,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "d2a356de8658e186",
+        "type": "ui_text",
+        "z": "3a6a12a5d73b9eef",
+        "group": "uiGroup",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "RSSI",
+        "format": "{{msg.rssi}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 950,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "f2755e833cfaa768",
+        "type": "postgresql",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Select BPM between timestamps",
+        "query": "SELECT timestamp, bpm \nFROM heartdata \nWHERE timestamp BETWEEN $1 AND $2 \nORDER BY timestamp ASC;",
+        "postgreSQLConfig": "635ccf61713184d3",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 800,
+        "y": 700,
+        "wires": [
+            [
+                "b4abcdadc7e3f971",
+                "abd3c148caf60361"
+            ]
+        ]
+    },
+    {
+        "id": "b4abcdadc7e3f971",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "chart format",
+        "func": "let dataChart = [];\n\nmsg.payload.forEach(row => {\n    dataChart.push({ x: new Date(row.timestamp), y: row.bpm});\n});\n\nmsg.payload = [{\n    series: [\"BPM\"],\n    data: [dataChart],\n    labels: [\"BPM sur Temps\"]\n}];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 820,
+        "wires": [
+            [
+                "0dd70906fc787a7d"
+            ]
+        ]
+    },
+    {
+        "id": "0dd70906fc787a7d",
+        "type": "ui_chart",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "group": "f08408df28868a8c",
+        "order": 0,
+        "width": "17",
+        "height": "10",
+        "label": "Bpm selon un temps choisi",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 660,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "552c2e62de017ce0",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "group and convert dates, send to postgre",
+        "func": "// Récupérer les dates depuis le contexte flow\nlet startDate = flow.get('start_date') || null;\nlet endDate = flow.get('end_date') || null;\n\n// Vérifier si les deux dates existent\nif (startDate && endDate) {\n    // Convertir les timestamps en format ISO ou autre format lisible\n    let formattedStartDate = new Date(startDate).toISOString(); // Format ISO\n    let formattedEndDate = new Date(endDate).toISOString(); // Format ISO\n\n    // Préparer le message pour le noeud PostgreSQL\n    return {\n        params: [formattedStartDate, formattedEndDate] // Les valeurs à insérer\n    };\n} else {\n    // Gestion des erreurs si les dates sont manquantes\n    return { payload: \"Dates manquantes\" };\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 700,
+        "wires": [
+            [
+                "f2755e833cfaa768"
+            ]
+        ]
+    },
+    {
+        "id": "b1a0f328bacccf87",
+        "type": "ui_button",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "group": "f08408df28868a8c",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "Soumettre",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 190,
+        "y": 700,
+        "wires": [
+            [
+                "552c2e62de017ce0"
+            ]
+        ]
+    },
+    {
+        "id": "52cae2df1d2313f8",
+        "type": "postgresql",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Select BPM between timestamps",
+        "query": "SELECT timestamp, bpm \nFROM heartdata \nORDER BY timestamp ASC;",
+        "postgreSQLConfig": "635ccf61713184d3",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 860,
+        "y": 100,
+        "wires": [
+            [
+                "54263d41036b1919"
+            ]
+        ]
+    },
+    {
+        "id": "7fddce922683b288",
+        "type": "ui_chart",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "group": "7186eec6480072fa",
+        "order": 0,
+        "width": "17",
+        "height": "10",
+        "label": "Graph_Entier",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "150",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 930,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4b91d61593591e4a",
+        "type": "delay",
+        "z": "3a6a12a5d73b9eef",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 620,
+        "y": 100,
+        "wires": [
+            [
+                "52cae2df1d2313f8"
+            ]
+        ]
+    },
+    {
+        "id": "54263d41036b1919",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "chart format",
+        "func": "let dataChart = [];\n\nmsg.payload.forEach(row => {\n    dataChart.push({ x: new Date(row.timestamp), y: row.bpm});\n});\n\nmsg.payload = [{\n    series: [\"BPM\"],\n    data: [dataChart],\n    labels: [\"BPM sur Temps\"]\n}];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 160,
+        "wires": [
+            [
+                "7fddce922683b288"
+            ]
+        ]
+    },
+    {
+        "id": "cb81cf1093bd6f4b",
+        "type": "ui_text",
+        "z": "3a6a12a5d73b9eef",
+        "group": "uiGroup",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Valeur BPM",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1670,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "a713cad336d8af7a",
+        "type": "function",
+        "z": "3a6a12a5d73b9eef",
+        "name": "Fonction affichage bpm",
+        "func": "// Définir les plages\nlet minInput = 0;   // Minimum du curseur\nlet maxInput = 9;   // Maximum du curseur\nlet minOutput = 50; // Minimum des BPM\nlet maxOutput = 142; // Maximum des BPM\n\n// Récupérer la valeur du curseur\nlet sliderValue = msg.payload;\n\n// Calculer la valeur convertie\nlet bpmValue = ((sliderValue - minInput) * (maxOutput - minOutput) / (maxInput - minInput)) + minOutput;\n\n// Ajouter la valeur convertie au message\nmsg.payload = bpmValue;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1430,
+        "y": 700,
+        "wires": [
+            [
+                "cb81cf1093bd6f4b"
+            ]
+        ]
+    },
+    {
+        "id": "71ed9c9b5031add6",
+        "type": "mqtt-broker",
+        "name": "Mqtt-Test-Tp",
+        "broker": "eu1.cloud.thethings.network",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "Bonjour je suis connecté",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "Je vais me déconnecter",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "Interruption",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "uiGroup",
+        "type": "ui_group",
+        "name": "Contrôle",
+        "tab": "4febb47527bc17dc",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "635ccf61713184d3",
+        "type": "postgreSQLConfig",
+        "name": "",
+        "host": "127.0.0.1",
+        "hostFieldType": "str",
+        "port": "5432",
+        "portFieldType": "num",
+        "database": "bpm",
+        "databaseFieldType": "str",
+        "ssl": "false",
+        "sslFieldType": "bool",
+        "applicationName": "",
+        "applicationNameType": "str",
+        "max": "10",
+        "maxFieldType": "num",
+        "idle": "1000",
+        "idleFieldType": "num",
+        "connectionTimeout": "10000",
+        "connectionTimeoutFieldType": "num",
+        "user": "root",
+        "userFieldType": "str",
+        "password": "root",
+        "passwordFieldType": "str"
+    },
+    {
+        "id": "serialConfig",
+        "type": "serial-port",
+        "name": "",
+        "serialport": "/dev/ttyACM0",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "newline": "",
+        "bin": "false",
+        "out": "char",
+        "addchar": "\\n",
+        "responsetimeout": ""
+    },
+    {
+        "id": "f08408df28868a8c",
+        "type": "ui_group",
+        "name": "Historique bpm",
+        "tab": "uiTab",
+        "order": 2,
+        "disp": true,
+        "width": "20",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "7186eec6480072fa",
+        "type": "ui_group",
+        "name": "Graphique BPM dans le temps",
+        "tab": "911b9121c3bb9864",
+        "order": 1,
+        "disp": true,
+        "width": "17",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "4febb47527bc17dc",
+        "type": "ui_tab",
+        "name": "Contrôle",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "uiTab",
+        "type": "ui_tab",
+        "name": "Historique",
+        "icon": "",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "911b9121c3bb9864",
+        "type": "ui_tab",
+        "name": "Graphique",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
