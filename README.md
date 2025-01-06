@@ -50,7 +50,7 @@ Créez une base de données et une table pour accueillir vos données.
 - Dans Node-RED, cliquez sur le menu en haut à droite > Import > collez le contenu du fichier ou sélectionnez-le directement.
 - Modifiez le nœud MQTT avec les informations de connexion configurées sur TTN (par exemple, clé d'accès, URL du serveur).
 - Modifiez les nœuds PostgreSQL dans Node-RED pour fournir les informations de connexion à votre base de données (nom d'utilisateur, mot de passe, nom de la base, etc.).
-- 
+  
 Étape 6 : Déploiement
 
 - Déployez le flux sur Node-RED en cliquant su le bouton "Déployer".
