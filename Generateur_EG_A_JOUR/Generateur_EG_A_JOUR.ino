@@ -25,39 +25,39 @@ void loop()
     if(recu[0] >= '0' && recu[0] <= '9')
     {
       if(recu[0] == '0'){ 
-        bpm = 760; // 1120ms = 50 bpm
+        bpm = 760; // 420 + 760 = 1180ms => 50 bpm
         Serial.print(recu);
       } // Ici méthode de step si recu[0] = 0 donc  BPM = 60 et ainsi de suite.
       else if (recu[0] == '1') {
-        bpm = 560; // 1040ms = 60 bpm
+        bpm = 560; // 420 + 560 = 980ms => 60 bpm
         Serial.print(recu);
       }
       else if (recu[0] == '2') {
-        bpm = 420; // 960ms = 70 bpm
+        bpm = 420; // 420 + 420 = 840ms => 70 bpm
         Serial.print(recu);
       }
       else if (recu[0] == '3') {
-        bpm = 320; // 880ms = 80 bpm
+        bpm = 320; // 420 + 320 = 740ms => 80 bpm
         Serial.print(recu);
       }
       else if (recu[0] == '4') {
-        bpm = 240; // 800ms = 90 bpm
+        bpm = 240; // 420 + 240 = 660ms => 90 bpm
         Serial.print(recu);
       }
       else if (recu[0] == '5') {
-        bpm = 160; // 720ms = 100 bpm
+        bpm = 160; // 420 + 160 = 580ms => 100 bpm
         Serial.print(recu);
       }
       else if (recu[0] == '6') {
-        bpm = 120; // 660ms = 110 bpm
+        bpm = 120; // 420 + 120 = 540ms => 110 bpm
         Serial.print(recu);
       }
       else if (recu[0] == '7') {
-        bpm = 80; // 580ms = 120 bpm
+        bpm = 80; // 420 + 80 = 500ms => 120 bpm
         Serial.print(recu);
       }
       else if (recu[0] == '8') {
-        bpm = 40; // 500 ms = 130 bpm
+        bpm = 40; // 420 + 40 = 460ms => 130 bpm
         Serial.print(recu);
       }
       else if (recu[0] == '9') {
@@ -66,7 +66,7 @@ void loop()
       }
       
     }
-    else bpm = 500; // 1minute = 90 bpm pour 340 ms
+    else bpm = 0; // 142bpm
   }
 
   // Simulation du battement de cœur
