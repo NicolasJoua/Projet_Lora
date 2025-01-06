@@ -1,0 +1,25 @@
+function decodeUplink(input) {
+  // Vérifier la taille du payload attendu
+  if (input.bytes.length !== 2) {
+    return {
+      errors: ["Payload size invalid"],
+    };
+  }
+
+  // Extraire la valeur BPM à partir des deux octets du payload
+  const bpm = (input.bytes[0] << 8) | input.bytes[1];
+
+  // Vérifier que le BPM est dans une plage acceptable
+  if (bpm < 30 || bpm > 220) {
+    return {
+      errors: ["BPM value out of range"],
+    };
+  }
+
+  // Retourner les données décodées en format JSON
+  return {
+    data: {
+      bpm: bpm,
+    },
+  };
+}
